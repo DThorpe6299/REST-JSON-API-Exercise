@@ -67,7 +67,57 @@
                     console.log(error);
                 });
             });
+            function updateCupcake(id, updatedData) {
+        return axios.patch(`/api/cupcakes/${id}`, updatedData);
+    }
+
+    // Function to delete a cupcake
+    function deleteCupcake(id) {
+        return axios.delete(`/api/cupcakes/${id}`);
+    }
+
+    // Event delegation to handle update and delete actions
+    $('#cupcake-list').on('click', 'li', function() {
+        const cupcakeId = $(this).data('id');
+
+        // Handling cupcake deletion
+        if (confirm('Are you sure you want to delete this cupcake?')) {
+            deleteCupcake(cupcakeId)
+                .then(function(response) {
+                    // Remove the deleted cupcake from the list
+                    $(`li[data-id="${cupcakeId}"]`).remove();
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        }
+    });
+
+    // Event delegation to handle update form submission
+    $('#cupcake-list').on('submit', 'form', function(event) {
+        event.preventDefault();
+
+        const cupcakeId = $(this).data('id');
+        const updatedFlavor = $(this).find('.update-flavor').val();
+        const updatedSize = $(this).find('.update-size').val();
+        const updatedRating = $(this).find('.update-rating').val();
+        const updatedImage = $(this).find('.update-image').val();
+
+        updateCupcake(cupcakeId, {
+            flavor: updatedFlavor,
+            size: updatedSize,
+            rating: updatedRating,
+            image: updatedImage
+        })
+        .then(function(response) {
+            // Refresh the cupcake list after update
+            getCupcakes();
+        })
+        .catch(function(error) {
+            console.log(error);
         });
+    });
+});
     </script>
 </body>
 </html>
